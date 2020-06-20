@@ -18,4 +18,4 @@ def move(direction):
 show()
 
 while not game.isDead():
-    move(minimax.chooseAction(AIGame(game), maxDepth=5))
+    move(minimax.chooseAction(AIGame(game), maxDepth=4))

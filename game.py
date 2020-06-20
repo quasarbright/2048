@@ -9,6 +9,13 @@ LEFT = "LEFT"
 RIGHT = "RIGHT"
 directions = [UP, DOWN, LEFT, RIGHT]
 
+snakeVectors = [
+    Vector(0,0),Vector(1,0),Vector(2,0),Vector(3,0),
+    Vector(3,1),Vector(2,1),Vector(1,1),Vector(0,1),
+    Vector(0,2),Vector(1,2),Vector(2,2),Vector(3,2),
+    Vector(3,3),Vector(2,3),Vector(1,3),Vector(0,3),
+]
+
 class Game:
     def __init__(self, board=None, allPositions=None):
         self.width = 4
@@ -123,18 +130,17 @@ class Game:
         return True
     
     def score(self):
-        '''like performance points in osu
-        rewards few, high squares. so an 8 is worth more than 2 4's.
-        It's worth noting that all games which have undergone N moves (and the same RNG)
-        have the same tile value sum, so this just measures the concentration of value.
+        '''encourages tiles to be positioned in decreasing order, snaking horizontally
         '''
-        flat = list(filter(lambda x: x > 0, self.board.flatten()))
-        asc = sorted(flat)
+        snaked = list(map(self.valAtVec, snakeVectors))
         score = 0
-        for val in asc:
+        for val in snaked:
             score *= .5
             score += val
         return score
+    
+    def userScore(self):
+        return np.sum(self.board)
 
     def __eq__(self, other):
         try:

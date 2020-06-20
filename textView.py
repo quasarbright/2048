@@ -52,5 +52,5 @@ class TextView:
         lines = [topLine] + intercalate(midLine, boardLines) + [bottomLine]
         ans = "\n".join(lines)
         if self.game.isDead():
-            ans += f"\nGame Over. Score: {self.game.score()}"
+            ans += f"\nGame Over. Score: {self.game.userScore()}"
         return ans
