@@ -61,13 +61,15 @@ class Game:
     def setVec(self, p, n : int):
         self.board[p.y, p.x] = n
     
+    def isFreePos(self, p):
+        return self.valAtVec(p) == 0
+    
     def getFreePos(self):
         '''returns a position which is not occupied by a non-zero number
         '''
         random.seed(self.seed)
-        def isGoodPosition(p):
-            return self.valAtVec(p) == 0
-        goodPositions = list(filter(isGoodPosition, self.allPositions))
+        
+        goodPositions = list(filter(self.isFreePos, self.allPositions))
         try:
             return random.choice(goodPositions)
         except IndexError:
@@ -101,12 +103,21 @@ class Game:
         return nums
 
     def spawnTile(self):
+        # actually random
         random.seed(self.seed)
         p = self.getFreePos()
         n = 2
         if random.randint(1, 10) == 1:
             n = 4
+        # best possible luck
+        # for p in snakeVectors:
+        #     if self.isFreePos(p):
+        #         break
+        # n = 4
         self.setVec(p, n)
+
+
+
     
     def move(self, direction):
         '''direction is either UP, DOWN, LEFT, or RIGHT

@@ -16,7 +16,7 @@ def move(direction):
 
 show()
 
-depth = 4
+depth = 5
 while not game.isDead():
     move(minimax.chooseAction(AIGame(game), maxDepth=depth))
 print("search depth used:",depth)
