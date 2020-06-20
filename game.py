@@ -1,6 +1,7 @@
 import numpy as np
 from vector import Vector
-import random
+from random import Random
+random = Random()
 
 UP = "UP"
 DOWN = "DOWN"
