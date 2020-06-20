@@ -27,10 +27,10 @@ class Game:
         return game
     
     def valAtVec(self, p):
-        return self.board[p.y][p.x]
+        return self.board[p.y, p.x]
     
     def setVec(self, p, n : int):
-        self.board[p.y][p.x] = n
+        self.board[p.y, p.x] = n
     
     def getFreePos(self):
         '''returns a position which is not occupied by a non-zero number
@@ -95,6 +95,7 @@ class Game:
     def move(self, direction):
         '''direction is either UP, DOWN, LEFT, or RIGHT
         '''
+        assert direction in directions
         old = self.copy()
         def pad(items, padItem, desiredLength, fromFront=True):
             lenitems = len(items)
@@ -108,15 +109,18 @@ class Game:
 
         away = direction in [DOWN, RIGHT]
         if direction in [DOWN, UP]:
+
             condensedCols = [self.getCondensedCol(c) for c in range(self.width)]
             condensedCols = [pad(col, 0, self.height, fromFront=away) for col in condensedCols]
-            for c, col in enumerate(condensedCols):
-                self.setCol(c, col)
+            self.board = np.transpose(np.array(condensedCols))
+            # for c, col in enumerate(condensedCols):
+            #     self.setCol(c, col)
         else:
             condensedRows = [self.getCondensedRow(r) for r in range(self.height)]
             condensedRows = [pad(row, 0, self.width, fromFront=away) for row in condensedRows]
-            for r, row in enumerate(condensedRows):
-                self.setRow(r, row)
+            self.board = np.array(condensedRows)
+            # for r, row in enumerate(condensedRows):
+            #     self.setRow(r, row)
 
         if old != self:
             # the move actually did something
@@ -138,10 +142,14 @@ class Game:
         asc = sorted(flat)
         score = 0
         for val in asc:
+            score *= .5
             score += val
-            score *= .9
 
         # score /= len(asc) # minimize live tiles
+
+        # good, but too slow
+        # if self.isDead():
+        #     score /= 10
 
         return score
 

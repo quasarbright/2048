@@ -2,15 +2,15 @@ import random
 memo = {}
 def chooseAction(game, maxDepth=10):
     def value(game, depth):
-        actions = game.getAllMoves()
         if (game, depth) in memo:
             return memo[(game, depth)]
+        actions = game.getAllMoves()
         if depth == 0 or len(actions) == 0:# or game.isTerminalState():
             ans = game.score()
             memo[(game, depth)] = ans
             return ans
         else:
-            newGames = [game.move(actions) for action in actions]
+            newGames = [game.move(action) for action in actions]
             ans = max([value(game, depth-1) for game in newGames])
             memo[(game, depth)] = ans
             return ans
