@@ -19,4 +19,4 @@ show()
 
 while not game.isDead():
     # time.sleep(.5)
-    move(minimax.chooseAction(AIGame(game), maxDepth=4))
+    move(minimax.chooseAction(AIGame(game), maxDepth=5))

@@ -12,6 +12,7 @@ class Game:
     def __init__(self, board=None, allPositions=None):
         self.width = 4
         self.height = 4
+        self.seed = random.random()
         self.board = board
         if board is None:
             self.board = np.array([[0 for _ in range(self.width)] for _ in range(self.height)])
@@ -20,10 +21,11 @@ class Game:
             self.allPositions = [Vector(x, y) for x in range(self.width) for y in range(self.height)]
         if board is None:
             self.spawnTile()
-            self.spawnTile()
     
+            self.spawnTile()
     def copy(self):
         game = Game(np.copy(self.board), self.allPositions)
+        game.seed = self.seed
         return game
     
     def valAtVec(self, p):
@@ -35,6 +37,7 @@ class Game:
     def getFreePos(self):
         '''returns a position which is not occupied by a non-zero number
         '''
+        random.seed(self.seed)
         def isGoodPosition(p):
             return self.valAtVec(p) == 0
         goodPositions = list(filter(isGoodPosition, self.allPositions))
@@ -86,6 +89,7 @@ class Game:
         return nums
 
     def spawnTile(self):
+        random.seed(self.seed)
         p = self.getFreePos()
         n = 2
         if random.randint(1, 10) == 1:
@@ -124,6 +128,7 @@ class Game:
 
         if old != self:
             # the move actually did something
+            self.seed += 1
             self.spawnTile()
         
     def isDead(self):
@@ -136,7 +141,9 @@ class Game:
     
     def score(self):
         '''like performance points in osu
-        rewards few, high squares. so an 8 is worth more than 2 4's
+        rewards few, high squares. so an 8 is worth more than 2 4's.
+        It's worth noting that all games which have undergone N moves (and the same RNG)
+        have the same tile value sum, so this just measures the concentration of value.
         '''
         flat = list(filter(lambda x: x > 0, self.board.flatten()))
         asc = sorted(flat)
@@ -144,6 +151,18 @@ class Game:
         for val in asc:
             score *= .5
             score += val
+
+        # best = max(flat)
+        # seen = set()
+        # dups = 0
+        # for val in flat:
+        #     if val in seen:
+        #         dups += 1
+        #     else:
+        #         seen.add(val)
+        # dups = max(dups, 1)
+        # return best + 1 / dups
+
 
         # score /= len(asc) # minimize live tiles
 
