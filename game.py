@@ -9,12 +9,31 @@ LEFT = "LEFT"
 RIGHT = "RIGHT"
 directions = [UP, DOWN, LEFT, RIGHT]
 
+# a snaking hamiltonian path of the grid
+'''
+>────┐
+┌────┘
+└────┐
+<────┘
+'''
 snakeVectors = [
     Vector(0,0),Vector(1,0),Vector(2,0),Vector(3,0),
     Vector(3,1),Vector(2,1),Vector(1,1),Vector(0,1),
     Vector(0,2),Vector(1,2),Vector(2,2),Vector(3,2),
     Vector(3,3),Vector(2,3),Vector(1,3),Vector(0,3),
 ]
+
+snakePaths = [
+    snakeVectors
+]
+snakePaths += [snakeVectors[::-1] for snakeVectors in snakePaths] # reverse
+snakePaths += [[Vector(p.y, p.x) for p in snakeVectors] for snakeVectors in snakePaths] # transpose
+snakePaths += [[Vector(3 - p.x, p.y) for p in snakeVectors] for snakeVectors in snakePaths] # vert refl
+snakePaths += [[Vector(p.x, 3 - p.y) for p in snakeVectors] for snakeVectors in snakePaths] # horiz refl
+snakePaths = list(set(map(tuple, snakePaths)))# remove duplicates
+# all unique snaky paths
+# 1 path per square symmetry in the D4 group
+
 
 class Game:
     def __init__(self, board=None, allPositions=None):
@@ -130,14 +149,16 @@ class Game:
         return True
     
     def score(self):
-        '''encourages tiles to be positioned in decreasing order, snaking horizontally
+        '''encourages tiles to be arranged in a snaking pattern and in decreasing order
         '''
-        snaked = list(map(self.valAtVec, snakeVectors))
-        score = 0
-        for val in snaked:
-            score *= .5
-            score += val
-        return score
+        def pathScore(snakeVectors):
+            snaked = list(map(self.valAtVec, snakeVectors))
+            score = 0
+            for val in snaked:
+                score *= .5
+                score += val
+            return score
+        return max(map(pathScore, snakePaths))
     
     def userScore(self):
         return np.sum(self.board)
