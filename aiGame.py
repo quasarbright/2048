@@ -25,3 +25,12 @@ class AIGame:
         newGame = self.game.copy()
         newGame.move(move)
         return AIGame(newGame)
+    
+    def __eq__(self, other):
+        try:
+            return self.game == other.game
+        except AttributeError:
+            return False
+    
+    def __hash__(self):
+        return hash(self.game)

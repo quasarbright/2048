@@ -1,8 +1,11 @@
 import random
-memo = {}
 def chooseAction(game, maxDepth=10):
+    # memo shouldn't be global because there can only possibly be a duplicate state 
+    # within a single call of chooseAction since the keys are (game, depth) pairs
+    memo = {}
     def value(game, depth):
         if (game, depth) in memo:
+            # print("sssdfsdf")
             return memo[(game, depth)]
         actions = game.getAllMoves()
         if depth == 0 or len(actions) == 0:# or game.isTerminalState():

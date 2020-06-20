@@ -64,21 +64,6 @@ class Game:
     
     def condense(self, nums):
         nums = list(filter(lambda x: x > 0, nums))
-        # def help(l : list):
-        #     '''functional programming ftw!
-        #     '''
-        #     if len(l) <= 1:
-        #         return l
-        #     else:
-        #         first = l[0]
-        #         second = l[1]
-        #         rest = l[2:]
-        #         if first == second:
-        #             return [2*first] + help(rest)
-        #         else:
-        #             return [first] + help([second] + rest)
-        # nums = help(nums)
-        # return nums
         i = 0
         while i < len(nums)-1:
             cur = nums[i]
@@ -114,18 +99,13 @@ class Game:
 
         away = direction in [DOWN, RIGHT]
         if direction in [DOWN, UP]:
-
             condensedCols = [self.getCondensedCol(c) for c in range(self.width)]
             condensedCols = [pad(col, 0, self.height, fromFront=away) for col in condensedCols]
             self.board = np.transpose(np.array(condensedCols))
-            # for c, col in enumerate(condensedCols):
-            #     self.setCol(c, col)
         else:
             condensedRows = [self.getCondensedRow(r) for r in range(self.height)]
             condensedRows = [pad(row, 0, self.width, fromFront=away) for row in condensedRows]
             self.board = np.array(condensedRows)
-            # for r, row in enumerate(condensedRows):
-            #     self.setRow(r, row)
 
         if old != self:
             # the move actually did something
@@ -133,6 +113,8 @@ class Game:
             self.spawnTile()
         
     def isDead(self):
+        if np.min(self.board) == 0:
+            return False
         for direction in directions:
             g = self.copy()
             g.move(direction)
@@ -152,25 +134,6 @@ class Game:
         for val in asc:
             score *= .5
             score += val
-
-        # best = max(flat)
-        # seen = set()
-        # dups = 0
-        # for val in flat:
-        #     if val in seen:
-        #         dups += 1
-        #     else:
-        #         seen.add(val)
-        # dups = max(dups, 1)
-        # return best + 1 / dups
-
-
-        # score /= len(asc) # minimize live tiles
-
-        # good, but too slow
-        # if self.isDead():
-        #     score /= 10
-
         return score
 
     def __eq__(self, other):
@@ -180,5 +143,5 @@ class Game:
             return False
 
     def __hash__(self):
-        return hash(self.board)
+        return hash(tuple(self.board.flatten()))
 
