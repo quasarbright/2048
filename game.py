@@ -9,20 +9,21 @@ RIGHT = "RIGHT"
 directions = [UP, DOWN, LEFT, RIGHT]
 
 class Game:
-    def __init__(self):
+    def __init__(self, board=None, allPositions=None):
         self.width = 4
         self.height = 4
-        self.board = np.array([[0 for _ in range(self.width)] for _ in range(self.height)])
-        self.allPositions = [Vector(x, y) for x in range(self.width) for y in range(self.height)]
-        self.spawnTile()
-        self.spawnTile()
+        self.board = board
+        if board is None:
+            self.board = np.array([[0 for _ in range(self.width)] for _ in range(self.height)])
+        self.allPositions = allPositions
+        if allPositions is None:
+            self.allPositions = [Vector(x, y) for x in range(self.width) for y in range(self.height)]
+        if board is None:
+            self.spawnTile()
+            self.spawnTile()
     
     def copy(self):
-        game = Game()
-        game.width = self.width
-        game.height = self.height
-        game.board = np.copy(self.board)
-        game.allPositions = self.allPositions
+        game = Game(np.copy(self.board), self.allPositions)
         return game
     
     def valAtVec(self, p):
@@ -59,22 +60,31 @@ class Game:
     
     def condense(self, nums):
         nums = list(filter(lambda x: x > 0, nums))
-        def help(l : list):
-            '''functional programming ftw!
-            '''
-            if len(l) <= 1:
-                return l
-            else:
-                first = l[0]
-                second = l[1]
-                rest = l[2:]
-                if first == second:
-                    return [2*first] + help(rest)
-                else:
-                    return [first] + help([second] + rest)
-        nums = help(nums)
+        # def help(l : list):
+        #     '''functional programming ftw!
+        #     '''
+        #     if len(l) <= 1:
+        #         return l
+        #     else:
+        #         first = l[0]
+        #         second = l[1]
+        #         rest = l[2:]
+        #         if first == second:
+        #             return [2*first] + help(rest)
+        #         else:
+        #             return [first] + help([second] + rest)
+        # nums = help(nums)
+        # return nums
+        i = 0
+        while i < len(nums)-1:
+            cur = nums[i]
+            next_ = nums[i+1]
+            if cur == next_:
+                del nums[i+1]
+                nums[i] *= 2
+            i += 1
         return nums
-    
+
     def spawnTile(self):
         p = self.getFreePos()
         n = 2
@@ -87,11 +97,13 @@ class Game:
         '''
         old = self.copy()
         def pad(items, padItem, desiredLength, fromFront=True):
-            while len(items) < desiredLength:
+            lenitems = len(items)
+            if lenitems < desiredLength:
+                pads = [padItem for _ in range(desiredLength - lenitems)]
                 if fromFront:
-                    items = [padItem] + items
+                    items = pads + items
                 else:
-                    items += [padItem]
+                    items += pads
             return items
 
         away = direction in [DOWN, RIGHT]
@@ -109,7 +121,29 @@ class Game:
         if old != self:
             # the move actually did something
             self.spawnTile()
+        
+    def isDead(self):
+        for direction in directions:
+            g = self.copy()
+            g.move(direction)
+            if g != self:
+                return False
+        return True
     
+    def score(self):
+        '''like performance points in osu
+        rewards few, high squares. so an 8 is worth more than 2 4's
+        '''
+        flat = list(filter(lambda x: x > 0, self.board.flatten()))
+        asc = sorted(flat)
+        score = 0
+        for val in asc:
+            score += val
+            score *= .9
+
+        # score /= len(asc) # minimize live tiles
+
+        return score
 
     def __eq__(self, other):
         try:
