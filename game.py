@@ -168,6 +168,8 @@ class Game:
             for val in snaked:
                 score *= .5
                 score += val
+            if self.isDead():
+                score /= 10
             return score
         return max(map(pathScore, snakePaths))
     
