@@ -12,7 +12,7 @@ $$
 $$
 Where $v_i$ is the $i$th position along the path and $grid[v_i]$ is the value of the tile at position $v_i$.
 
-Then, I took the maximum path score out of all the snake paths and returned that as the score. This heuristic leads to the AI organizing the tiles in whichever snake path is optimal at the time.
+I take the maximum path score out of all the snake paths, divide by 10 if the game is over, and return that as the score. This heuristic leads to the AI organizing the tiles in whichever snake path is optimal at the time.
 
 # dependencies
 * python >=3.6
