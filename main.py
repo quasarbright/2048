@@ -1,3 +1,4 @@
+import sys
 import random
 import time
 from game import Game, UP, DOWN, LEFT, RIGHT, directions
@@ -17,6 +18,8 @@ def move(direction):
 show()
 
 depth = 5
+if len(sys.argv) > 1:
+    depth = int(sys.argv[1])
 while not game.isDead():
     move(minimax.chooseAction(AIGame(game), maxDepth=depth))
 print("search depth used:",depth)
