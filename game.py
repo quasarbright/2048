@@ -168,10 +168,22 @@ class Game:
             for val in snaked:
                 score *= .5
                 score += val
-            if self.isDead():
-                score /= 10
             return score
-        return max(map(pathScore, snakePaths))
+
+        clusteriness = 0
+        for val in sorted(list(self.board.flatten())):
+            clusteriness *= 0.5
+            clusteriness += val
+        
+        snakiness = max(map(pathScore, snakePaths)) / clusteriness
+
+        emptiness = len(tuple(filter(lambda tile: tile == 0, self.board.flatten())))
+        emptiness /= 16
+
+        score = np.sqrt(emptiness) * snakiness
+        if self.isDead():
+            score /= 10
+        return score
     
     def userScore(self):
         return np.sum(self.board)

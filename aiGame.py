@@ -5,7 +5,7 @@ class AIGame:
         self.game = game
     
     def getAllMoves(self):
-        return directions
+        return directions[:]
 
     def getLegalMoves(self):
         return list(filter(self.isMoveLegal, self.getAllMoves()))
